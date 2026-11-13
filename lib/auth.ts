@@ -11,6 +11,17 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash)
 }
 
+export function isDemoCredentialBlocked(
+  email: string,
+  password: string,
+  env: string = process.env.NODE_ENV || 'development'
+): boolean {
+  if (env !== 'production') return false
+  const DEMO_EMAILS = ['admin@devarena.dev', 'alice@example.com', 'bob@example.com', 'carol@example.com']
+  const DEMO_PASSWORDS = ['admin123', 'demo123']
+  return DEMO_EMAILS.includes(email.toLowerCase()) && DEMO_PASSWORDS.includes(password)
+}
+
 export async function requireAuth() {
   const user = await getCurrentUser()
   if (!user) {

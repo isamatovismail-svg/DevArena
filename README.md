@@ -91,7 +91,7 @@ DevArena adheres to strict code execution security:
 - [x] **Engineering & Quality**
   - [x] Strict TypeScript compilation (`tsc --noEmit` exits 0).
   - [x] ESLint validation (`next lint` exits 0 with 0 errors).
-  - [x] Unit test suite (`npm test` passes 11/11 tests across 3 suites).
+  - [x] Unit test suite (`npm test` passes 12/12 tests across 3 suites).
   - [x] Production build (`next build` succeeds with optimized static and dynamic route generation).
   - [x] Normalized Prisma SQLite database with seed data (16 original problems, 3 contests, 10 achievements, sample submissions).
 
@@ -106,7 +106,7 @@ DevArena adheres to strict code execution security:
 ### Setup Steps
 ```bash
 # 1. Clone repository
-git clone https://github.com/your-username/DevArena.git
+git clone https://github.com/isamatovismail-svg/DevArena.git
 cd DevArena
 
 # 2. Install dependencies

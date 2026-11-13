@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { verifyPassword } from '@/lib/auth'
+import { verifyPassword, isDemoCredentialBlocked } from '@/lib/auth'
 import { getSession } from '@/lib/session'
 
 const loginSchema = z.object({
@@ -19,6 +19,12 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password } = result.data
+
+    if (isDemoCredentialBlocked(email, password)) {
+      return NextResponse.json({
+        error: 'Default demo credentials cannot be used in production. Please use your personal registered credentials.',
+      }, { status: 403 })
+    }
 
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },

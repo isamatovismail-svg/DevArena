@@ -111,30 +111,32 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Demo account quick login helper */}
-          <div className="mt-6 pt-5 border-t border-border">
-            <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider text-center mb-2.5">
-              Quick Fill Demo Accounts
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <button
-                type="button"
-                onClick={() => handleDemoFill('admin@devarena.dev')}
-                className="p-2 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-secondary hover:text-text-primary transition-colors text-left"
-              >
-                <div className="font-semibold text-accent-400">Admin</div>
-                <div className="text-[10px] text-text-muted font-mono truncate">admin@devarena.dev</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoFill('alice@example.com')}
-                className="p-2 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-secondary hover:text-text-primary transition-colors text-left"
-              >
-                <div className="font-semibold text-green-400">Alice (User)</div>
-                <div className="text-[10px] text-text-muted font-mono truncate">alice@example.com</div>
-              </button>
+          {/* Demo account quick login helper (development/demo mode only) */}
+          {process.env.NODE_ENV !== 'production' && (
+            <div className="mt-6 pt-5 border-t border-border">
+              <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider text-center mb-2.5">
+                Quick Fill Demo Accounts (Dev Mode)
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => handleDemoFill('admin@devarena.dev')}
+                  className="p-2 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-secondary hover:text-text-primary transition-colors text-left"
+                >
+                  <div className="font-semibold text-accent-400">Admin</div>
+                  <div className="text-[10px] text-text-muted font-mono truncate">admin@devarena.dev</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDemoFill('alice@example.com')}
+                  className="p-2 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border text-text-secondary hover:text-text-primary transition-colors text-left"
+                >
+                  <div className="font-semibold text-green-400">Alice (User)</div>
+                  <div className="text-[10px] text-text-muted font-mono truncate">alice@example.com</div>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </Card>
 
         <p className="text-center text-xs text-text-secondary mt-6">

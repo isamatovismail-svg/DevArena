@@ -479,6 +479,12 @@ const achievements = [
 async function main() {
   console.log('🌱 Starting DevArena database seed...')
 
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_DEMO_SEED !== 'true') {
+    console.error('❌ Refusing to seed default demo accounts in production environment.')
+    console.error('   To override for staging, set ALLOW_DEMO_SEED=true in environment.')
+    process.exit(1)
+  }
+
   // 1. Create Admin
   const adminPassword = await bcrypt.hash('admin123', 12)
   const admin = await prisma.user.upsert({
