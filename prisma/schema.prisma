@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  username      String   @unique
+  email         String   @unique
+  passwordHash  String
+  displayName   String?
+  bio           String?
+  avatarUrl     String?
+  role          String   @default("USER") // USER | ADMIN
+  rating        Int      @default(1200)
+  rank          Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  submissions         Submission[]
+  contestParticipants ContestParticipant[]
+  userAchievements    UserAchievement[]
+
+  @@index([rating])
+  @@index([username])
+}
+
+model Problem {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String
+  difficulty   String   // EASY | MEDIUM | HARD
+  category     String
+  tags         String   // JSON array stored as string
+  constraints  String?
+  inputFormat  String?
+  outputFormat String?
+  examples     String   // JSON array stored as string
+  timeLimit    Int      @default(1000) // ms
+  memoryLimit  Int      @default(256)  // MB
+  points       Int      @default(100)
+  isPublished  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  testCases       TestCase[]
+  submissions     Submission[]
+  contestProblems ContestProblem[]
+
+  @@index([difficulty])
+  @@index([category])
+  @@index([slug])
+}
+
+model TestCase {
+  id         String  @id @default(cuid())
+  problemId  String
+  input      String
+  expected   String
+  isSample   Boolean @default(false)
+  orderIndex Int     @default(0)
+
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId])
+}
+
+model Submission {
+  id           String   @id @default(cuid())
+  userId       String
+  problemId    String
+  contestId    String?
+  code         String
+  language     String
+  status       String   @default("PENDING") // PENDING | RUNNING | ACCEPTED | WRONG_ANSWER | TIME_LIMIT_EXCEEDED | COMPILATION_ERROR | RUNTIME_ERROR
+  runtime      Int?     // ms
+  memory       Int?     // KB
+  output       String?
+  errorMessage String?
+  judge0Token  String?
+  testResults  String?  // JSON
+  createdAt    DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  contest Contest? @relation(fields: [contestId], references: [id])
+
+  @@index([userId])
+  @@index([problemId])
+  @@index([contestId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Contest {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  startTime   DateTime
+  endTime     DateTime
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  contestProblems     ContestProblem[]
+  contestParticipants ContestParticipant[]
+  submissions         Submission[]
+
+  @@index([startTime])
+  @@index([endTime])
+}
+
+model ContestProblem {
+  id         String @id @default(cuid())
+  contestId  String
+  problemId  String
+  orderIndex Int    @default(0)
+  points     Int    @default(100)
+
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([contestId, problemId])
+  @@index([contestId])
+}
+
+model ContestParticipant {
+  id           String   @id @default(cuid())
+  contestId    String
+  userId       String
+  score        Int      @default(0)
+  rank         Int?
+  registeredAt DateTime @default(now())
+
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([contestId, userId])
+  @@index([contestId])
+  @@index([userId])
+}
+
+model Achievement {
+  id          String @id @default(cuid())
+  slug        String @unique
+  title       String
+  description String
+  icon        String
+  points      Int    @default(10)
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
